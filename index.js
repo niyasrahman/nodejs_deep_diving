@@ -5,7 +5,7 @@ Entry File
 // Dependencies
 var http=require('http');
 var url = require('url');
-
+var StringDecoder= require('string_decoder').StringDecoder;
 //Create a server
 
 var server= http.createServer(function(req,res){
@@ -26,9 +26,21 @@ var server= http.createServer(function(req,res){
 	//get headers
 	var headers=req.headers;
 
+	//get payload 
+	var decoder=new StringDecoder('utf-8');
+	var buffer='';
+
+	req.on('data',function(data){
+		buffer+=decoder.write(data);
+	});
+	req.on('end',function(){
+		buffer+=decoder.end();
+
 	//send response 
 	res.end("hello world\n");
-	console.log(headers)
+	console.log(buffer)
+	});
+
 });
 
 //listen port 3000
